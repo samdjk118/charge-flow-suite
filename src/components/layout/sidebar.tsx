@@ -31,11 +31,6 @@ const navigationItems = [
     href: "/billing",
   },
   {
-    icon: CreditCard,
-    label: "發票管理",
-    href: "/invoices",
-  },
-  {
     icon: Building2,
     label: "專案管理",
     href: "/projects",
