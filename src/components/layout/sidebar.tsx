@@ -1,6 +1,18 @@
 import { Building2, LayoutDashboard, Users, Receipt, Settings, CreditCard } from "lucide-react";
-import { Navigation } from "@/components/ui/navigation";
-import { Separator } from "@/components/ui/separator";
+import { NavLink, useLocation } from "react-router-dom";
+import {
+  Sidebar as SidebarComponent,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
 
 const navigationItems = [
   {
@@ -36,26 +48,60 @@ const navigationItems = [
 ];
 
 export function Sidebar() {
+  const { state } = useSidebar();
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const isActive = (path: string) => {
+    if (path === "/" && currentPath === "/") return true;
+    if (path !== "/" && currentPath.startsWith(path)) return true;
+    return false;
+  };
+
   return (
-    <div className="flex h-full w-64 flex-col bg-card border-r">
-      <div className="flex h-14 items-center border-b px-6">
-        <div className="flex items-center gap-2">
+    <SidebarComponent className="border-r">
+      <SidebarHeader className="border-b">
+        <div className="flex items-center gap-2 px-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold">
             B
           </div>
-          <h1 className="text-lg font-semibold">Billing System</h1>
+          {state === "expanded" && (
+            <h1 className="text-lg font-semibold">Billing System</h1>
+          )}
         </div>
-      </div>
-      
-      <div className="flex-1 px-4 py-6">
-        <Navigation items={navigationItems} />
-      </div>
-      
-      <div className="border-t p-4">
-        <div className="text-xs text-muted-foreground">
-          版本 1.0.0
-        </div>
-      </div>
-    </div>
+      </SidebarHeader>
+
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>主選單</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                  <SidebarMenuButton 
+                    asChild 
+                    isActive={isActive(item.href)}
+                    tooltip={state === "collapsed" ? item.label : undefined}
+                  >
+                    <NavLink to={item.href}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.label}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="border-t">
+        {state === "expanded" && (
+          <div className="px-2 py-1">
+            <div className="text-xs text-muted-foreground">版本 1.0.0</div>
+          </div>
+        )}
+      </SidebarFooter>
+    </SidebarComponent>
   );
 }

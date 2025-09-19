@@ -1,4 +1,3 @@
-import { Sidebar } from "@/components/layout/sidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -56,23 +55,20 @@ const getStatusBadge = (status: string) => {
 
 export default function Billing() {
   return (
-    <div className="flex h-screen bg-background">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto">
-        <div className="flex-1 space-y-4 p-8 pt-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-3xl font-bold tracking-tight">帳務模組</h2>
-            <div className="flex space-x-2">
-              <Button variant="outline">
-                <Download className="mr-2 h-4 w-4" />
-                匯出
-              </Button>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                新增帳單
-              </Button>
-            </div>
-          </div>
+    <div className="flex-1 space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">帳務模組</h2>
+        <div className="flex space-x-2">
+          <Button variant="outline">
+            <Download className="mr-2 h-4 w-4" />
+            匯出
+          </Button>
+          <Button>
+            <Plus className="mr-2 h-4 w-4" />
+            新增帳單
+          </Button>
+        </div>
+      </div>
 
           <div className="grid gap-4 md:grid-cols-4">
             <Card>
@@ -173,10 +169,8 @@ export default function Billing() {
                   ))}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+        </CardContent>
+      </Card>
     </div>
   );
 }
