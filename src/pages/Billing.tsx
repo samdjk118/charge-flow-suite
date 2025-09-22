@@ -2,7 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Download, Eye } from "lucide-react";
+import { useState } from "react";
 
 const billingRecords = [
   {
@@ -54,6 +59,55 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function Billing() {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    month: "",
+    customer: "",
+    service: "",
+    discount: "",
+    originalPrice: "",
+    finalAmount: "",
+    date: ""
+  });
+
+  const calculateFinalAmount = (originalPrice: string, discount: string) => {
+    const price = parseFloat(originalPrice) || 0;
+    const discountPercent = parseFloat(discount) || 0;
+    return price * (1 - discountPercent / 100);
+  };
+
+  const handleOriginalPriceChange = (value: string) => {
+    setFormData(prev => {
+      const newData = { ...prev, originalPrice: value };
+      newData.finalAmount = calculateFinalAmount(value, prev.discount).toString();
+      return newData;
+    });
+  };
+
+  const handleDiscountChange = (value: string) => {
+    setFormData(prev => {
+      const newData = { ...prev, discount: value };
+      newData.finalAmount = calculateFinalAmount(prev.originalPrice, value).toString();
+      return newData;
+    });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // 這裡將來會串接API
+    console.log("新增帳單:", formData);
+    setOpen(false);
+    setFormData({
+      month: "",
+      customer: "",
+      service: "",
+      discount: "",
+      originalPrice: "",
+      finalAmount: "",
+      date: ""
+    });
+  };
+
   return (
     <div className="flex-1 space-y-4">
       <div className="flex items-center justify-between">
@@ -63,10 +117,126 @@ export default function Billing() {
             <Download className="mr-2 h-4 w-4" />
             匯出
           </Button>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            新增帳單
-          </Button>
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                新增帳單
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>新增帳單</DialogTitle>
+                <DialogDescription>
+                  請填入帳單詳細資訊
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleSubmit}>
+                <div className="grid gap-4 py-4 max-h-[400px] overflow-y-auto">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="month" className="text-right">
+                      月份
+                    </Label>
+                    <Input
+                      id="month"
+                      type="month"
+                      value={formData.month}
+                      onChange={(e) => setFormData({ ...formData, month: e.target.value })}
+                      className="col-span-3"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="customer" className="text-right">
+                      客戶
+                    </Label>
+                    <Select onValueChange={(value) => setFormData({ ...formData, customer: value })} required>
+                      <SelectTrigger className="col-span-3">
+                        <SelectValue placeholder="選擇客戶" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="科技公司 A">科技公司 A</SelectItem>
+                        <SelectItem value="新創企業 B">新創企業 B</SelectItem>
+                        <SelectItem value="傳統製造 C">傳統製造 C</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="service" className="text-right">
+                      服務/專案
+                    </Label>
+                    <Input
+                      id="service"
+                      value={formData.service}
+                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                      className="col-span-3"
+                      placeholder="輸入服務或專案名稱"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="originalPrice" className="text-right">
+                      原價
+                    </Label>
+                    <Input
+                      id="originalPrice"
+                      type="number"
+                      value={formData.originalPrice}
+                      onChange={(e) => handleOriginalPriceChange(e.target.value)}
+                      className="col-span-3"
+                      placeholder="0"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="discount" className="text-right">
+                      折扣 (%)
+                    </Label>
+                    <Input
+                      id="discount"
+                      type="number"
+                      value={formData.discount}
+                      onChange={(e) => handleDiscountChange(e.target.value)}
+                      className="col-span-3"
+                      placeholder="0"
+                      min="0"
+                      max="100"
+                      required
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="finalAmount" className="text-right">
+                      實付金額
+                    </Label>
+                    <Input
+                      id="finalAmount"
+                      type="number"
+                      value={formData.finalAmount}
+                      className="col-span-3"
+                      readOnly
+                      placeholder="自動計算"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="date" className="text-right">
+                      日期
+                    </Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      className="col-span-3"
+                      required
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit">新增帳單</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 

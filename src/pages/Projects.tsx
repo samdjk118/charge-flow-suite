@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -17,6 +20,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useState } from "react";
 
 const projects = [
   {
@@ -83,14 +87,104 @@ const getStatusBadge = (status: string) => {
 };
 
 export default function Projects() {
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    customer: "",
+    status: "",
+    startDate: ""
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // 這裡將來會串接API
+    console.log("新增專案:", formData);
+    setOpen(false);
+    setFormData({ name: "", customer: "", status: "", startDate: "" });
+  };
+
   return (
     <div className="flex-1 space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">專案管理</h2>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          新增專案
-        </Button>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              新增專案
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>新增專案</DialogTitle>
+              <DialogDescription>
+                請填入專案基本資訊
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    服務/專案名
+                  </Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="col-span-3"
+                    placeholder="輸入專案名稱"
+                    required
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="customer" className="text-right">
+                    客戶名
+                  </Label>
+                  <Select onValueChange={(value) => setFormData({ ...formData, customer: value })} required>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="選擇客戶" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="科技公司 A">科技公司 A</SelectItem>
+                      <SelectItem value="新創企業 B">新創企業 B</SelectItem>
+                      <SelectItem value="傳統製造 C">傳統製造 C</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="status" className="text-right">
+                    狀態
+                  </Label>
+                  <Select onValueChange={(value) => setFormData({ ...formData, status: value })} required>
+                    <SelectTrigger className="col-span-3">
+                      <SelectValue placeholder="選擇狀態" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="啟用">啟用</SelectItem>
+                      <SelectItem value="停用">停用</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="startDate" className="text-right">
+                    啟用日
+                  </Label>
+                  <Input
+                    id="startDate"
+                    type="date"
+                    value={formData.startDate}
+                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                    className="col-span-3"
+                    required
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button type="submit">新增專案</Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
           
           <div className="flex items-center space-x-2">
