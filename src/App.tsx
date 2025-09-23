@@ -6,11 +6,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Sidebar } from "@/components/layout/sidebar";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Customers from "./pages/Customers";
 import Projects from "./pages/Projects";
 import Billing from "./pages/Billing";
 import Permissions from "./pages/Permissions";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,12 +34,37 @@ const App = () => (
                 </header>
                 <main className="flex-1 p-6">
                   <Routes>
-                    <Route path="/" element={<Dashboard />} />
-                    <Route path="/customers" element={<Customers />} />
-                    <Route path="/billing" element={<Billing />} />
-                    <Route path="/invoices" element={<Billing />} />
-                    <Route path="/projects" element={<Projects />} />
-                    <Route path="/permissions" element={<Permissions />} />
+                    <Route path="/auth" element={<Auth />} />
+                    <Route path="/" element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/customers" element={
+                      <ProtectedRoute>
+                        <Customers />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/billing" element={
+                      <ProtectedRoute>
+                        <Billing />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/invoices" element={
+                      <ProtectedRoute>
+                        <Billing />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/projects" element={
+                      <ProtectedRoute>
+                        <Projects />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/permissions" element={
+                      <ProtectedRoute>
+                        <Permissions />
+                      </ProtectedRoute>
+                    } />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
