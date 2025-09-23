@@ -89,15 +89,11 @@ export default function Auth() {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">計費管理系統</CardTitle>
           <CardDescription>
-            登入您的帳戶或建立新帳戶
+            登入
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">登入</TabsTrigger>
-              <TabsTrigger value="signup">註冊</TabsTrigger>
-            </TabsList>
             
             {message && (
               <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
@@ -132,38 +128,6 @@ export default function Auth() {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   登入
-                </Button>
-              </form>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">電子郵件</Label>
-                  <Input
-                    id="signup-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    placeholder="請輸入您的電子郵件"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">密碼</Label>
-                  <Input
-                    id="signup-password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    placeholder="請輸入您的密碼（至少6個字元）"
-                    minLength={6}
-                  />
-                </div>
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  註冊
                 </Button>
               </form>
             </TabsContent>
