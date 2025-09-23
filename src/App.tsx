@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Sidebar } from "@/components/layout/sidebar";
+import { AuthProvider } from "@/hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
 import Customers from "./pages/Customers";
 import Projects from "./pages/Projects";
@@ -16,35 +17,37 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <SidebarProvider>
-          <div className="min-h-screen flex w-full">
-            <Sidebar />
-            <div className="flex-1 flex flex-col">
-              <header className="h-14 flex items-center border-b px-6 bg-background">
-                <SidebarTrigger className="mr-4" />
-                <h2 className="text-lg font-semibold">計費管理系統</h2>
-              </header>
-              <main className="flex-1 p-6">
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/customers" element={<Customers />} />
-                  <Route path="/billing" element={<Billing />} />
-                  <Route path="/invoices" element={<Billing />} />
-                  <Route path="/projects" element={<Projects />} />
-                  <Route path="/permissions" element={<Permissions />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <SidebarProvider>
+            <div className="min-h-screen flex w-full">
+              <Sidebar />
+              <div className="flex-1 flex flex-col">
+                <header className="h-14 flex items-center border-b px-6 bg-background">
+                  <SidebarTrigger className="mr-4" />
+                  <h2 className="text-lg font-semibold">計費管理系統</h2>
+                </header>
+                <main className="flex-1 p-6">
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/customers" element={<Customers />} />
+                    <Route path="/billing" element={<Billing />} />
+                    <Route path="/invoices" element={<Billing />} />
+                    <Route path="/projects" element={<Projects />} />
+                    <Route path="/permissions" element={<Permissions />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+              </div>
             </div>
-          </div>
-        </SidebarProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+          </SidebarProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

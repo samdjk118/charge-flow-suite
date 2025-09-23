@@ -1,4 +1,4 @@
-import { Building2, LayoutDashboard, Users, Receipt, Settings, CreditCard } from "lucide-react";
+import { Building2, LayoutDashboard, Users, Receipt, Settings, LogOut, User } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar as SidebarComponent,
@@ -13,6 +13,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 const navigationItems = [
   {
@@ -44,6 +46,7 @@ const navigationItems = [
 
 export function Sidebar() {
   const { state } = useSidebar();
+  const { user, signOut } = useAuth();
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -91,6 +94,40 @@ export function Sidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t">
+        {user && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <div className="flex items-center gap-2 px-2 py-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {user.email?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    {state === "expanded" && (
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate">
+                          {user.email || '使用者'}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton 
+                    onClick={signOut}
+                    tooltip={state === "collapsed" ? "登出" : undefined}
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>登出</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
         {state === "expanded" && (
           <div className="px-2 py-1">
             <div className="text-xs text-muted-foreground">版本 1.0.0</div>
