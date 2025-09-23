@@ -70,6 +70,31 @@ export function Sidebar() {
       </SidebarHeader>
 
       <SidebarContent>
+        {user && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <div className="flex items-center gap-2 px-2 py-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className="bg-primary text-primary-foreground">
+                        {user.email?.charAt(0).toUpperCase() || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    {state === "expanded" && (
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium truncate">
+                          {user.email || '使用者'}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+        
         <SidebarGroup>
           <SidebarGroupLabel>主選單</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -98,22 +123,6 @@ export function Sidebar() {
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
-                <SidebarMenuItem>
-                  <div className="flex items-center gap-2 px-2 py-2">
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="bg-primary text-primary-foreground">
-                        {user.email?.charAt(0).toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                    {state === "expanded" && (
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-medium truncate">
-                          {user.email || '使用者'}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </SidebarMenuItem>
                 <SidebarMenuItem>
                   <SidebarMenuButton 
                     onClick={signOut}
