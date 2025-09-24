@@ -11,8 +11,8 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
-  signIn: (email: string, password: string) => Promise<{ error?: string }>;
-  signUp: (email: string, password: string) => Promise<{ error?: string }>;
+  signIn: (username: string, password: string) => Promise<{ error?: string }>;
+  signUp: (username: string, password: string) => Promise<{ error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -49,11 +49,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (username: string, password: string) => {
     try {
       const data = await apiFetch('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
       
       if (data.access) {
@@ -67,11 +67,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (username: string, password: string) => {
     try {
       const data = await apiFetch('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
       });
       
       if (data.success) {

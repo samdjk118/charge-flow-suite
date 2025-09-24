@@ -11,7 +11,7 @@ import { Loader2 } from 'lucide-react';
 
 export default function Auth() {
   const { user, loading, signIn, signUp } = useAuth();
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
@@ -36,7 +36,7 @@ export default function Auth() {
     setMessage(null);
 
     try {
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(username, password);
 
       if (error) {
         setMessage({ type: 'error', text: error });
@@ -54,7 +54,7 @@ export default function Auth() {
     setMessage(null);
 
     try {
-      const { error } = await signUp(email, password);
+      const { error } = await signUp(username, password);
 
       if (error) {
         setMessage({ type: 'error', text: error });
@@ -96,14 +96,14 @@ export default function Auth() {
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signin-email">電子郵件</Label>
+                  <Label htmlFor="signin-username">帳號名稱</Label>
                   <Input
-                    id="signin-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="signin-username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
-                    placeholder="請輸入您的電子郵件"
+                    placeholder="請輸入您的帳號名稱"
                   />
                 </div>
                 <div className="space-y-2">
@@ -127,14 +127,14 @@ export default function Auth() {
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">電子郵件</Label>
+                  <Label htmlFor="signup-username">帳號名稱</Label>
                   <Input
-                    id="signup-email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="signup-username"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     required
-                    placeholder="請輸入您的電子郵件"
+                    placeholder="請輸入您的帳號名稱"
                   />
                 </div>
                 <div className="space-y-2">
