@@ -1,52 +1,100 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { apiFetch } from '@/lib/api';
+
+interface User {
+  id: string;
+  email: string;
+  name?: string;
+}
 
 interface AuthContextValue {
   user: User | null;
-  session: Session | null;
   loading: boolean;
   signOut: () => Promise<void>;
+  signIn: (email: string, password: string) => Promise<{ error?: string }>;
+  signUp: (email: string, password: string) => Promise<{ error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
   user: null,
-  session: null,
   loading: true,
   signOut: async () => {},
+  signIn: async () => ({}),
+  signUp: async () => ({}),
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    );
-
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    checkAuthStatus();
   }, []);
 
+  const checkAuthStatus = async () => {
+    try {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      const userData = await apiFetch('/auth/me');
+      setUser(userData);
+    } catch (error) {
+      localStorage.removeItem('access_token');
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const data = await apiFetch('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+      
+      if (data.access) {
+        localStorage.setItem('access_token', data.access);
+        setUser(data.user);
+        return {};
+      }
+      return { error: '登入失敗' };
+    } catch (error: any) {
+      return { error: error.message || '登入時發生錯誤' };
+    }
+  };
+
+  const signUp = async (email: string, password: string) => {
+    try {
+      const data = await apiFetch('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+      
+      if (data.success) {
+        return {};
+      }
+      return { error: '註冊失敗' };
+    } catch (error: any) {
+      return { error: error.message || '註冊時發生錯誤' };
+    }
+  };
+
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await apiFetch('/auth/logout', { method: 'POST' });
+    } catch (error) {
+      // 即使後端登出失敗，也要清除本地資料
+    }
+    localStorage.removeItem('access_token');
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signOut, signIn, signUp }}>
       {children}
     </AuthContext.Provider>
   );
