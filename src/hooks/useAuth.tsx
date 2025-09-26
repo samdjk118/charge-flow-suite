@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { useNavigate } from "react-router-dom";
 
 interface User {
   id: string;
@@ -11,8 +12,8 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   signOut: () => Promise<void>;
-  signIn: (username: string, password: string) => Promise<{ error?: string }>;
-  signUp: (username: string, password: string) => Promise<{ error?: string }>;
+  signIn: (account: string, password: string) => Promise<{ error?: string }>;
+  signUp: (account: string, password: string) => Promise<{ error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -26,6 +27,7 @@ const AuthContext = createContext<AuthContextValue>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  
 
   useEffect(() => {
     checkAuthStatus();
@@ -39,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const userData = await apiFetch('/auth/me');
+      const userData = await apiFetch('/users/me/');
       setUser(userData);
     } catch (error) {
       localStorage.removeItem('access_token');
@@ -49,16 +51,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signIn = async (username: string, password: string) => {
+  const signIn = async (account: string, password: string) => {
     try {
-      const data = await apiFetch('/auth/login', {
+      const data = await apiFetch('/auth/login/', {
         method: 'POST',
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ account, password }),
       });
       
       if (data.access) {
         localStorage.setItem('access_token', data.access);
         setUser(data.user);
+        window.location.reload();
         return {};
       }
       return { error: '登入失敗' };
@@ -67,11 +70,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const signUp = async (username: string, password: string) => {
+  const signUp = async (account: string, password: string) => {
     try {
-      const data = await apiFetch('/auth/register', {
+      const data = await apiFetch('/auth/register/', {
         method: 'POST',
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ account, password }),
       });
       
       if (data.success) {
@@ -85,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
-      await apiFetch('/auth/logout', { method: 'POST' });
+      await apiFetch('/auth/logout/', { method: 'POST' });
     } catch (error) {
       // 即使後端登出失敗，也要清除本地資料
     }

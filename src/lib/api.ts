@@ -9,7 +9,7 @@ async function refreshAccess(): Promise<string | null> {
 
   refreshPromise = (async () => {
     try {
-      const res = await fetch(`${API_BASE}/token/refresh/`, {
+      const res = await fetch(`${API_BASE}/auth/refresh/`, {
         method: 'POST',
         credentials: 'include', // send HttpOnly cookie
         headers: {

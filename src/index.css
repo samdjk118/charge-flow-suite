@@ -11,6 +11,7 @@ html, body, #__next {
 
 @layer base {
   :root {
+    --background: 255 255 255;
     --foreground: 203 24% 10%;
 
     --card: 0 0% 100%;

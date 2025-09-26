@@ -84,7 +84,7 @@ export function Sidebar() {
                     {state === "expanded" && (
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium truncate">
-                          {user.email || '使用者'}
+                          {user.name|| '使用者'}
                         </div>
                       </div>
                     )}

@@ -14,11 +14,11 @@ export default function Dashboard() {
         </div>
       </div>
       <StatsCards />
-      <div className="grid gap-4 lg:grid-cols-5">
-        <div className="lg:col-span-3">
+      <div className="grid gap-4 grid-cols-1">
+        <div>
           <RevenueChart />
         </div>
-        <div className="lg:col-span-2">
+        <div className="w-full lg:w-1/2">
           <ServiceBreakdown />
         </div>
       </div>
